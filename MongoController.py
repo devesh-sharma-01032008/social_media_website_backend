@@ -20,7 +20,7 @@ user_schema = {
 information.insert_one(user_schema)
 
 
-class UserManagementMongoDB:
+class MongoController:
     def __init__(self, uri, db_name, collection_name, admin_name, admin_passwd):
         """
         Usage:  Constructor to set all the value of this class
@@ -156,9 +156,15 @@ class UserManagementMongoDB:
                 else:
                     required[key] = x[key]
             result.append(required)
-        print(result)
         try:
-            return result[0:count]
+            result = result[self.start:self.start+count]
+            self.start += count
+            print(result)
+            print(self.start)
+            if self.start > len(result):
+                self.start = 0
+            return result
+            
         except Exception as e:
             print(e)
             return result
@@ -170,6 +176,16 @@ class UserManagementMongoDB:
             return True
         return False
 
-    def create_collection(self,collection_name):
+    def create_collection(self,collection_name,initial_data={"name":""}):
         self.change_collection(collection_name)
+        self.insert_data_in_collection(initial_data)
 
+# creates a collection in database
+# db = MongoController("mongodb://localhost:27017","JNV_Media","user_details","root","")
+# db.connect_to_mongo()
+# db.create_collection("devesh",{
+#     "name":"devesh"
+# })
+
+# checks if collection exists in  the database
+# print(db.search_collection("deveshs"))
